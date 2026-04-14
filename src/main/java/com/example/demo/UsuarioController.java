@@ -1,22 +1,22 @@
 package com.example.demo;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
+//import java.util.Scanner;
 
 @RestController
+@RequestMapping("/usuarios")
 public class UsuarioController {
 
-    @GetMapping("/usuarios")
+    @GetMapping
     public List<Usuarios> obtenerUsuarios(){
 
-        Scanner obj = new Scanner(System.in);
+        //Scanner obj = new Scanner(System.in);
         List<Usuarios> usuarios = new ArrayList<>();
 
-        System.out.print("Número de usuarios: ");
+       /* System.out.print("Número de usuarios: ");
         int cantidad = obj.nextInt();
         obj.nextLine();
 
@@ -35,6 +35,16 @@ public class UsuarioController {
 
             usuarios.add(new Usuarios(id,nombre,email));
         }
+        return usuarios;*/
+        usuarios.add(new Usuarios(1,"Aldo","aldo@gmail.com"));
+        usuarios.add(new Usuarios(2,"Brenda","bren_sn@gmail.com"));
+
         return usuarios;
     }
+
+    @PostMapping
+    public String crearUsuarios(@RequestBody Usuarios usuarios){
+        return "Usuario creado con exito: " +usuarios.getNombre();
+    }
+
 }
