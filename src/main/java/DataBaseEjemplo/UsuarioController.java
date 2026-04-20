@@ -15,6 +15,11 @@ public class UsuarioController {
         this.repo = repo;
     }
 
+    @GetMapping("/buscar")
+    public List<Usuario> buscar(@RequestParam String nombre) {
+        return repo.findByNombre(nombre);
+    }
+
     @GetMapping
     public List<Usuario> obtenerUsuarios() {
         return repo.findAll();
@@ -23,6 +28,16 @@ public class UsuarioController {
     @PostMapping
     public Usuario crearUsuario(@RequestBody Usuario usuario) {
         return repo.save(usuario);
+    }
+
+    @GetMapping("/{id}")
+    public Usuario obtenerPorId(@PathVariable int id) {
+        return repo.findById((long) id).orElse(null);
+    }
+
+    @DeleteMapping("/{id}")
+    public void eliminarUsuario(@PathVariable int id) {
+        repo.deleteById((long) id);
     }
 
 }
