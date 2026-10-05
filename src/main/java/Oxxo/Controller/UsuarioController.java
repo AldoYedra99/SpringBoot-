@@ -6,6 +6,7 @@ import Oxxo.model.Usuario;
 import Oxxo.service.UsuarioService;
 import Oxxo.exeption.UsuarioNotFoundException;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,7 +42,7 @@ public class UsuarioController {
     }
 
    @PostMapping
-    public ResponseEntity<UsuarioDTO> crearUsuario(@RequestBody UsuarioRequest req) {
+    public ResponseEntity<UsuarioDTO> crearUsuario(@Valid @RequestBody UsuarioRequest req) {
         Usuario usuario = new Usuario();
 
         usuario.setId(req.getId());
