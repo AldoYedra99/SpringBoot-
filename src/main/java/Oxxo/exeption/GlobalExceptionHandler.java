@@ -11,6 +11,7 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
     @ExceptionHandler(UsuarioNotFoundException.class)
     public ResponseEntity<Map<String, String>> usuarioNoEncontrado(
             UsuarioNotFoundException ex) {
@@ -41,5 +42,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(errores);
+    }
+
+    @ExceptionHandler(ProductoNotFoundException.class)
+    public ResponseEntity<Map<String, String>> manejarProductoNoEncontrado(
+            ProductoNotFoundException ex){
+        Map<String,String> error = Map.of(
+                "error","Producto no encontrado",
+                "mensaje", ex.getMessage()
+        );
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(error);
     }
 }

@@ -35,10 +35,7 @@ public class ProductoService {
 
         return repo.findById(id)
                 .orElseThrow(() ->
-                        new ProductoNotFoundException(
-                                "Producto con ID " + id + " no encontrado"
-                        )
-                );
+                        new ProductoNotFoundException(id));
     }
 
     public Producto crearProducto(ProductoRequest request) {
@@ -55,9 +52,7 @@ public class ProductoService {
 
         if (!repo.existsById(id)) {
 
-            throw new ProductoNotFoundException(
-                    "Producto con ID " + id + " no encontrado"
-            );
+            throw new ProductoNotFoundException(id);
         }
 
         repo.deleteById(id);
