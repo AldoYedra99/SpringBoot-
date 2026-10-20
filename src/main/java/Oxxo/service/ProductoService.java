@@ -1,6 +1,7 @@
 package Oxxo.service;
 
 import Oxxo.dto.ProductoDTO;
+import Oxxo.dto.ProductoRequest;
 import Oxxo.exeption.ProductoNotFoundException;
 import Oxxo.model.Producto;
 import Oxxo.repository.ProductoRepository;
@@ -40,7 +41,12 @@ public class ProductoService {
                 );
     }
 
-    public Producto crearProducto(Producto producto) {
+    public Producto crearProducto(ProductoRequest request) {
+        Producto producto = new Producto();
+
+        producto.setId(request.getId());
+        producto.setNombre(request.getNombre());
+        producto.setPrecio(request.getPrecio());
 
         return repo.save(producto);
     }

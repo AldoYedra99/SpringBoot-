@@ -5,6 +5,8 @@ import Oxxo.dto.ProductoRequest;
 import Oxxo.model.Producto;
 import Oxxo.service.ProductoService;
 
+import jakarta.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,20 +42,13 @@ public class ProductoController {
 
     @PostMapping
     public ResponseEntity<Producto> crearProducto(
-            @RequestBody ProductoRequest request) {
+            @Valid @RequestBody ProductoRequest request) {
 
-        Producto producto = new Producto(
-                request.getId(),
-                request.getNombre(),
-                request.getPrecio()
-        );
-
-        Producto productoGuardado =
-                service.crearProducto(producto);
+        Producto producto = service.crearProducto(request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(productoGuardado);
+                .body(producto);
     }
 
     @DeleteMapping("/{id}")

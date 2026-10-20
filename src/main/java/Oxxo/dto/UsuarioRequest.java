@@ -3,10 +3,12 @@ package Oxxo.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotNull;
 
 public class UsuarioRequest {
 
-    private int id;
+    @NotNull(message = "El ID es Obligatorio")
+    private Integer id;
 
     @NotBlank(message = "El nombre es obligatorio")
     @Size(min = 3, max = 50,
@@ -24,7 +26,7 @@ public class UsuarioRequest {
     public UsuarioRequest(){
 
     }
-    public int getId() {
+    public Integer getId() {
         return id;
     }
     public String getNombre() {
@@ -37,7 +39,7 @@ public class UsuarioRequest {
         return password;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
     public void setNombre(String nombre)
