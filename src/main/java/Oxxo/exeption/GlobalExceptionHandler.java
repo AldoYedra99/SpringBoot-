@@ -2,12 +2,16 @@ package Oxxo.exeption;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
+import Oxxo.dto.ErrorResponse;
+import java.time.LocalDateTime;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -25,31 +29,37 @@ public class GlobalExceptionHandler {
                 .body(respuesta);
     }
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> erroresValidacion(
+    public ResponseEntity<ErrorResponse> manejarErroresValidacion(
             MethodArgumentNotValidException ex) {
 
-        Map<String, String> errores = new HashMap<>();
+        Map<String, String> detalles = new HashMap<>();
 
-        ex.getBindingResult()
-                .getFieldErrors()
-                .forEach(error ->
-                        errores.put(
-                                error.getField(),
-                                error.getDefaultMessage()
-                        )
-                );
+        for(FieldError error : ex.getBindingResult().getFieldErrors()) {
+            detalles.put(error.getField(),error.getDefaultMessage());
+        }
 
+        ErrorResponse respuesta = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                "Error de Validacion",
+                "Hay campos que no cumplen las reglas",
+                detalles
+        );
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(errores);
+                .body(respuesta);
     }
 
     @ExceptionHandler(ProductoNotFoundException.class)
-    public ResponseEntity<Map<String, String>> manejarProductoNoEncontrado(
+    public ResponseEntity<ErrorResponse> manejarProductoNoEncontrado(
             ProductoNotFoundException ex){
-        Map<String,String> error = Map.of(
-                "error","Producto no encontrado",
-                "mensaje", ex.getMessage()
+
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.NOT_FOUND.value(),
+                "Producto no encontrado",
+                ex.getMessage(),
+                Map.of()
         );
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
