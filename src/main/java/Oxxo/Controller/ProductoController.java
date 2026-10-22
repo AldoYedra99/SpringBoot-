@@ -10,8 +10,14 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.math.BigDecimal;
 
 @RestController
 @RequestMapping("/productos")
@@ -59,4 +65,67 @@ public class ProductoController {
 
         return ResponseEntity.noContent().build();
     }
+
+    public ResponseEntity<Page<Producto>> obtenerProductosPaginados(
+            @RequestParam(defaultValue = "0") int pagina,
+            @RequestParam(defaultValue = "10") int tamaño,
+            @RequestParam(defaultValue = "id") String ordenarPor,
+            @RequestParam(defaultValue = "asc") String direccion){
+
+        if(pagina < 0 || tamaño < 1 || tamaño > 100){
+            throw new IllegalArgumentException(
+                    "La página debe ser >= y el tamaño debe estar entre 1 y 100");
+        }
+
+        Sort sort = direccion.equalsIgnoreCase("desc")
+                ? Sort.by(ordenarPor).descending()
+                : Sort.by(ordenarPor).ascending();
+
+        Pageable pageable = PageRequest.of(pagina,tamaño,sort);
+
+        return ResponseEntity.ok(
+                service.obtenerProducosPaginados(pageable)
+        );
+    }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<Page<Producto>> buscarProductos(
+            @RequestParam(required = false) String nombre,
+            @RequestParam(required = false) BigDecimal precioMin,
+            @RequestParam(required = false) BigDecimal precioMax,
+            @RequestParam(defaultValue = "0") int pagina,
+            @RequestParam(defaultValue = "10") int tamaño,
+            @RequestParam(defaultValue = "id") String ordenarPor,
+            @RequestParam(defaultValue = "asc") String direccion){
+
+        if (pagina < 0 || tamaño < 1 || tamaño > 100){
+            throw new IllegalArgumentException(
+                    "La págin debe ser >=0 y el tamaño debe estar entre 1 y 100");
+        }
+
+        if(!ordenarPor.equals("id")
+            && !ordenarPor.equals("nombre")
+            && !ordenarPor.equals("precio")){
+            throw new IllegalArgumentException(
+                    "El campo de ordenamiento no es valido");
+        }
+
+        if (!direccion.equalsIgnoreCase("asc")
+                && !direccion.equalsIgnoreCase("desc")) {
+            throw new IllegalArgumentException(
+                    "La direccion debe ser asc o desc");
+        }
+
+        Sort sort = direccion.equalsIgnoreCase("desc")
+                ? Sort.by(ordenarPor).descending()
+                : Sort.by(ordenarPor).ascending();
+
+        Pageable pageable = PageRequest.of(pagina, tamaño, sort);
+
+        return ResponseEntity.ok(
+                service.buscarConFiltros(
+                        nombre, precioMin, precioMax , pageable)
+        );
+    }
 }
+

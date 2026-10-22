@@ -7,8 +7,11 @@ import Oxxo.model.Producto;
 import Oxxo.repository.ProductoRepository;
 
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.math.BigDecimal;
 
 @Service
 public class ProductoService {
@@ -56,5 +59,26 @@ public class ProductoService {
         }
 
         repo.deleteById(id);
+    }
+
+    public Page<Producto> obtenerProducosPaginados(Pageable pageable){
+        return repo.findAll(pageable);
+    }
+
+    public Page<Producto> buscarConFiltros(
+            String nombre,
+            BigDecimal precioMin,
+            BigDecimal precioMax,
+            Pageable pageable){
+
+        if(precioMin != null
+            && precioMax != null
+            && precioMin.compareTo(precioMax) >0){
+            throw new IllegalArgumentException(
+                    "El precio minimo no se puede superar al precio maximo");
+        }
+
+        return repo.buscarConFiltros(
+                nombre, precioMin, precioMax, pageable);
     }
 }
