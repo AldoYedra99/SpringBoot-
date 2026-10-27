@@ -1,8 +1,9 @@
 package Oxxo.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.FetchType;
 
 import java.math.BigDecimal;
 
@@ -16,6 +17,10 @@ public class Producto {
     private String nombre;
 
     private BigDecimal precio;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "UsuarioID", nullable = false)
+    private Usuario usuario;
 
     public Producto(){
     }
@@ -42,5 +47,11 @@ public class Producto {
     }
     public void setPrecio(BigDecimal precio) {
         this.precio = precio;
+    }
+    public Usuario getUsuario(){
+        return usuario;
+    }
+    public void setUsuario(Usuario usuario){
+        this.usuario = usuario;
     }
 }

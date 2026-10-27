@@ -5,11 +5,14 @@ import Oxxo.dto.UsuarioRequest;
 import Oxxo.model.Usuario;
 import Oxxo.service.UsuarioService;
 import Oxxo.exeption.UsuarioNotFoundException;
+import Oxxo.dto.UsuarioProductosDTO;
 
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -74,5 +77,12 @@ public class UsuarioController {
     @GetMapping("/buscar")
     public List<Usuario> buscar(@RequestParam String nombre) {
         return service.buscarPorNombre(nombre);
+    }
+    @GetMapping("/{id}/productos")
+    public ResponseEntity<UsuarioProductosDTO> obtenerProductosDelUsuario(
+            @PathVariable Long id){
+
+        return ResponseEntity.ok(
+                service.obtenerUsuarioConProductos(id));
     }
 }

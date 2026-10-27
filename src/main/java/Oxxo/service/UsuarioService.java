@@ -1,6 +1,5 @@
 package Oxxo.service;
 
-import Oxxo.exeption.UsuarioNotFoundException;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,6 +8,8 @@ import Oxxo.repository.UsuarioRepository;
 import Oxxo.model.Usuario;
 import Oxxo.dto.UsuarioDTO;
 import Oxxo.exeption.UsuarioNotFoundException;
+import Oxxo.dto.ProductoResumenDTO;
+import Oxxo.dto.UsuarioProductosDTO;
 
 @Service
 public class UsuarioService {
@@ -58,5 +59,29 @@ public class UsuarioService {
                                 "Usuario con ID " + id + " no encontrado"
                         )
                 );
+    }
+
+    public UsuarioProductosDTO obtenerUsuarioConProductos(Long id){
+        Usuario usuario = repo.buscarConProductos(id)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "No se encontro el Usuario con ID: "+id
+                        )
+                );
+
+        var productosODT = usuario.getProductos()
+                .stream()
+                .map(producto -> new ProductoResumenDTO(
+                        producto.getId(),
+                        producto.getNombre(),
+                        producto.getPrecio()
+                ))
+                .collect(Collectors.toList());
+
+        return new UsuarioProductosDTO(
+                (long)usuario.getId(),
+                usuario.getNombre(),
+                productosODT
+        );
     }
 }

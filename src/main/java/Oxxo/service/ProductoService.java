@@ -5,6 +5,7 @@ import Oxxo.dto.ProductoRequest;
 import Oxxo.exeption.ProductoNotFoundException;
 import Oxxo.model.Producto;
 import Oxxo.repository.ProductoRepository;
+import Oxxo.dto.ProductoResponseDTO;
 
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
@@ -80,5 +81,14 @@ public class ProductoService {
 
         return repo.buscarConFiltros(
                 nombre, precioMin, precioMax, pageable);
+    }
+    public ProductoResponseDTO convertitADTO(Producto producto){
+        return new ProductoResponseDTO(
+                producto.getId(),
+                producto.getNombre(),
+                producto.getPrecio(),
+                (long)producto.getUsuario().getId(),
+                producto.getUsuario().getNombre()
+        );
     }
 }

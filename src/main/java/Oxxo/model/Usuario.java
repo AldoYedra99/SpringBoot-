@@ -3,11 +3,16 @@ package Oxxo.model;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.FetchType;
 
 import java.util.List;
+import java.util.ArrayList;
 
 
 @Entity
+@Table(name = "Usuario")
 public class Usuario {
 
     @Id
@@ -18,6 +23,12 @@ public class Usuario {
 
     @OneToMany(mappedBy = "usuario")
     private List<Pedido> pedidos;
+
+    @OneToMany(
+            mappedBy = "usuario",
+            fetch = FetchType.LAZY
+    )
+    private List<Producto> productos = new ArrayList<>();
 
     public Usuario() {}
 
@@ -57,6 +68,12 @@ public class Usuario {
     public void setPassword(String password) {
         this.password = password;
     }
-
+//UsuariosONETOMANY
+    public List<Producto> getProductos(){
+        return productos;
+    }
+    public void setProductos(List<Producto> productos){
+        this.productos = productos;
+    }
 }
 
