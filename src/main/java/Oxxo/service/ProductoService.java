@@ -6,10 +6,12 @@ import Oxxo.exeption.ProductoNotFoundException;
 import Oxxo.model.Producto;
 import Oxxo.repository.ProductoRepository;
 import Oxxo.dto.ProductoResponseDTO;
+import Oxxo.dto.ProductoActualizarRequest;
 
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.math.BigDecimal;
@@ -62,7 +64,7 @@ public class ProductoService {
         repo.deleteById(id);
     }
 
-    public Page<Producto> obtenerProducosPaginados(Pageable pageable){
+    public Page<Producto> obtenerProducosPaginados(Pageable pageable) {
         return repo.findAll(pageable);
     }
 
@@ -70,11 +72,11 @@ public class ProductoService {
             String nombre,
             BigDecimal precioMin,
             BigDecimal precioMax,
-            Pageable pageable){
+            Pageable pageable) {
 
-        if(precioMin != null
-            && precioMax != null
-            && precioMin.compareTo(precioMax) >0){
+        if (precioMin != null
+                && precioMax != null
+                && precioMin.compareTo(precioMax) > 0) {
             throw new IllegalArgumentException(
                     "El precio minimo no se puede superar al precio maximo");
         }
@@ -82,13 +84,55 @@ public class ProductoService {
         return repo.buscarConFiltros(
                 nombre, precioMin, precioMax, pageable);
     }
-    public ProductoResponseDTO convertitADTO(Producto producto){
+
+    public ProductoResponseDTO convertitADTO(Producto producto) {
         return new ProductoResponseDTO(
                 producto.getId(),
                 producto.getNombre(),
                 producto.getPrecio(),
-                (long)producto.getUsuario().getId(),
+                producto.getUsuario().getId(),
                 producto.getUsuario().getNombre()
+        );
+    }
+
+    //Usuario   Productos
+    public List<ProductoResponseDTO> obtenerProductosConUsuario() {
+        return repo.buscarProductosConUsuario();
+    }
+
+    //BuscarporProducto
+    public List<ProductoResponseDTO> buscarPorNombreConUsuario(
+            String nombre) {
+        if (nombre == null || nombre.isBlank()) {
+            throw new IllegalArgumentException(
+                    "El nombre de busqueda no puede estar vacio"
+            );
+        }
+        return repo.buscarPorNombreConUsuario(
+                nombre.trim()
+        );
+    }
+
+    @Transactional
+    public ProductoResponseDTO actualizarProducto(
+            Long id,
+            ProductoActualizarRequest request) {
+
+        Producto producto = repo.findById(id)
+                .orElseThrow(() ->
+                        new ProductoNotFoundException(id)
+                );
+        producto.setNombre(request.getNombre());
+        producto.setPrecio(request.getPrecio());
+
+        Producto actualizado = repo.save(producto);
+
+        return new ProductoResponseDTO(
+                actualizado.getId(),
+                actualizado.getNombre(),
+                actualizado.getPrecio(),
+                actualizado.getUsuario().getId(),
+                actualizado.getUsuario().getNombre()
         );
     }
 }

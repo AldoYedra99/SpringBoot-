@@ -1,6 +1,8 @@
 package Oxxo.repository;
 
 import Oxxo.model.Producto;
+import Oxxo.dto.ProductoResponseDTO;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,7 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
-
+import java.util.List;
 
 public interface ProductoRepository
         extends JpaRepository<Producto, Long> {
@@ -25,5 +27,35 @@ public interface ProductoRepository
             @Param("precioMin") BigDecimal precioMin,
             @Param("precioMax") BigDecimal precioMax,
             Pageable pageable
+    );
+
+    @Query("""
+        SELECT new Oxxo.dto.ProductoResponseDTO(
+        p.id,
+        p.nombre,
+        p.precio,
+        u.id,
+        u.nombre
+        )
+        FROM Producto p
+        JOIN p.usuario u
+""")
+    List<ProductoResponseDTO> buscarProductosConUsuario();
+
+    @Query("""
+SELECT new Oxxo.dto.ProductoResponseDTO(
+        p.id,
+        p.nombre,
+        p.precio,
+        u.id,
+        u.nombre
+    )
+    FROM Producto p
+    JOIN p.usuario u
+    WHERE LOWER (p.nombre)
+        LIKE LOWER(CONCAT('%', :nombre, '%'))
+""")
+    List<ProductoResponseDTO> buscarPorNombreConUsuario(
+            @Param("nombre") String nombre
     );
 }

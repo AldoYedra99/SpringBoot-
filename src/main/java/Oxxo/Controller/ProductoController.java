@@ -2,8 +2,10 @@ package Oxxo.Controller;
 
 import Oxxo.dto.ProductoDTO;
 import Oxxo.dto.ProductoRequest;
+import Oxxo.dto.ProductoResponseDTO;
 import Oxxo.model.Producto;
 import Oxxo.service.ProductoService;
+import Oxxo.dto.ProductoActualizarRequest;
 
 import jakarta.validation.Valid;
 
@@ -125,6 +127,28 @@ public class ProductoController {
         return ResponseEntity.ok(
                 service.buscarConFiltros(
                         nombre, precioMin, precioMax , pageable)
+        );
+    }
+
+    @GetMapping("/con-usuario")
+    public ResponseEntity<List<ProductoResponseDTO>> obtenerProductosConUsuario(){
+        return ResponseEntity.ok(service.obtenerProductosConUsuario());
+    }
+
+    @GetMapping("/buscar-con-usuario")
+    public ResponseEntity<List<ProductoResponseDTO>>
+            buscarPorNombreConUsuario(
+                    @RequestParam String nombre){
+        return ResponseEntity.ok(
+                service.buscarPorNombreConUsuario(nombre)
+        );
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductoResponseDTO> actualizarProducto(
+            @PathVariable Long id,
+            @Valid @RequestBody ProductoActualizarRequest request){
+        return ResponseEntity.ok(
+                service.actualizarProducto(id, request)
         );
     }
 }

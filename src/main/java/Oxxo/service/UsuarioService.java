@@ -1,5 +1,6 @@
 package Oxxo.service;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,14 +11,20 @@ import Oxxo.dto.UsuarioDTO;
 import Oxxo.exeption.UsuarioNotFoundException;
 import Oxxo.dto.ProductoResumenDTO;
 import Oxxo.dto.UsuarioProductosDTO;
+import Oxxo.dto.UsuarioRolesDTO;
+import Oxxo.model.Rol;
+import Oxxo.dto.UsuarioResponseDTO;
 
 @Service
 public class UsuarioService {
 
     private final UsuarioRepository repo;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository repo) {
+    public UsuarioService(UsuarioRepository repo,
+                          PasswordEncoder passwordEncoder) {
         this.repo = repo;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<UsuarioDTO> obtenerUsuarios(){
@@ -34,6 +41,9 @@ public class UsuarioService {
     }
 
     public Usuario crearUsuario(Usuario usuario) {
+        usuario.setPassword(
+                passwordEncoder.encode(usuario.getPassword())
+        );
         return repo.save(usuario);
     }
     public void eliminarUsuario(long id) {
@@ -82,6 +92,32 @@ public class UsuarioService {
                 (long)usuario.getId(),
                 usuario.getNombre(),
                 productosODT
+        );
+    }
+
+    public UsuarioRolesDTO obtenerUsuarioConRoles(Long id){
+        Usuario usuario = repo.findWithRolesById(id)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "No se encontro el usuario con ID:" +id
+                        ));
+        var nombresRoles = usuario.getRoles()
+                .stream()
+                .map(Rol::getNombre)
+                .collect(Collectors.toSet());
+
+        return new UsuarioRolesDTO(
+                (long)usuario.getId(),
+                usuario.getNombre(),
+                nombresRoles
+        );
+    }
+    public UsuarioResponseDTO convertirAResponseDTO(Usuario usuario) {
+
+        return new UsuarioResponseDTO(
+                (long)usuario.getId(),
+                usuario.getNombre(),
+                usuario.getEmail()
         );
     }
 }

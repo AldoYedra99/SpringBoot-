@@ -1,14 +1,11 @@
 package Oxxo.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.FetchType;
+import jakarta.persistence.*;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Entity
@@ -16,7 +13,8 @@ import java.util.ArrayList;
 public class Usuario {
 
     @Id
-    private int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
     private String nombre;
     private String email;
     private String password;
@@ -32,13 +30,13 @@ public class Usuario {
 
     public Usuario() {}
 
-    public Usuario(int id, String nombre, String email, String password) {
+    public Usuario(Integer id, String nombre, String email, String password) {
         this.id = id;
         this.nombre = nombre;
         this.email = email;
         this.password = password;
     }
-    public int getId() {
+    public Integer getId() {
         return id;
     }
     public void setId(int id) {
@@ -74,6 +72,22 @@ public class Usuario {
     }
     public void setProductos(List<Producto> productos){
         this.productos = productos;
+    }
+
+    //ROL
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "Usuario_Rol",
+            joinColumns = @JoinColumn(name = "usuario_id"),
+            inverseJoinColumns = @JoinColumn(name = "rol_id")
+    )
+    private Set<Rol> roles = new HashSet<>();
+
+    public Set<Rol> getRoles(){
+        return roles;
+    }
+    public void setRoles(Set<Rol> roles){
+        this.roles = roles;
     }
 }
 

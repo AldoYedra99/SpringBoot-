@@ -6,6 +6,7 @@ import Oxxo.model.Usuario;
 import Oxxo.service.UsuarioService;
 import Oxxo.exeption.UsuarioNotFoundException;
 import Oxxo.dto.UsuarioProductosDTO;
+import Oxxo.dto.UsuarioRolesDTO;
 
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -48,13 +49,12 @@ public class UsuarioController {
     public ResponseEntity<UsuarioDTO> crearUsuario(@Valid @RequestBody UsuarioRequest req) {
         Usuario usuario = new Usuario();
 
-        usuario.setId(req.getId());
+        /*usuario.setId(req.getId());*/
         usuario.setNombre(req.getNombre());
         usuario.setEmail(req.getEmail());
         usuario.setPassword(req.getPassword());
 
-        Usuario usuarioGuardado =
-                service.crearUsuario(usuario);
+        Usuario usuarioGuardado = service.crearUsuario(usuario);
 
         UsuarioDTO usuarioDTO = new UsuarioDTO(
                 (long) usuarioGuardado.getId(),
@@ -84,5 +84,13 @@ public class UsuarioController {
 
         return ResponseEntity.ok(
                 service.obtenerUsuarioConProductos(id));
+    }
+
+    @GetMapping("/{id}/roles")
+    public ResponseEntity<UsuarioRolesDTO> obtenerRoles(
+            @PathVariable Long id){
+        return ResponseEntity.ok(
+                service.obtenerUsuarioConRoles(id)
+        );
     }
 }
