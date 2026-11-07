@@ -16,6 +16,7 @@ public interface UsuarioRepository
 
     @EntityGraph(attributePaths = "roles")
     Optional<Usuario> findByEmail(String email);
+    boolean existsByEmail(String email);
 
     List<Usuario> id(int id);
 
